@@ -327,11 +327,6 @@ rem{T<:Integer}(x::T, ::Type{T}) = x
 rem(x::Integer, ::Type{Bool}) = ((x&1)!=0)
 mod{T<:Integer}(x::Integer, ::Type{T}) = rem(x, T)
 
-convert{Tf<:Union{Float32,Float64}}(T::BitSigned64T, x::Tf) =
-    box(T,checked_fptosi(T,unbox(Tf,x)))
-convert{Tf<:Union{Float32,Float64}}(T::BitUnsigned64T, x::Tf) =
-    box(T,checked_fptoui(T,unbox(Tf,x)))
-
 convert{Tf<:Union{Float32,Float64}}(T::Union{Type{Int128},Type{UInt128}}, x::Tf) =
     (isinteger(x) || throw(InexactError()) ; trunc(T,x))
 
