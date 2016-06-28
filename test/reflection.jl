@@ -5,7 +5,6 @@
 # sufficient to catch segfault bugs.
 
 module ReflectionTest
-using Base.Test
 
 function test_ast_reflection(freflect, f, types)
     @test !isempty(freflect(f, types))

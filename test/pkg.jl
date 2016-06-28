@@ -1,5 +1,6 @@
 # This file is a part of Julia. License is MIT: http://julialang.org/license
 
+@testset "pkg" begin
 import Base.Pkg.PkgError
 
 function temp_pkg_dir(fn::Function, remove_tmp_dir::Bool=true)
@@ -560,4 +561,6 @@ temp_pkg_dir() do
             "redirect_stderr(STDOUT); using Example; Pkg.update(\"$package\")"`))
         @test contains(msg, "- $package\nRestart Julia to use the updated versions.")
     end
+end
+
 end

@@ -1,6 +1,5 @@
 # This file is a part of Julia. License is MIT: http://julialang.org/license
 
-using Base.Test
 debug = false
 
 n= 10 #Size of matrix to test
@@ -162,6 +161,7 @@ let
         end
     end
 end
+<<<<<<< HEAD
 
 # Test that concatenations of annotated sparse/special matrix types with other matrix
 # types yield sparse arrays, and that the code which effects that does not make concatenations
