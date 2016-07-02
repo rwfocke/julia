@@ -1,6 +1,5 @@
 # This file is a part of Julia. License is MIT: http://julialang.org/license
 
-@testset "inline" begin
 """
 Helper to walk the AST and call a function on every node.
 """
@@ -73,4 +72,3 @@ end
 g16165(x) = f16165(x)
 @test g16165(1) === (UInt(1) + 1)
 
-end
