@@ -1759,6 +1759,8 @@ for op in (:.+, :.*, :.÷, :.%, :.<<, :.>>, :.-, :./, :.\, :.//, :.^)
     @eval @test typeof($(op)(A,A)) == Matrix{Foo}
 end
 
+end
+
 # Test that concatenations of dense matrices/vectors yield dense matrices/vectors
 let
     N = 4
