@@ -385,6 +385,7 @@ static void jl_cacheable_sig(
     int *const makesimplesig)
 {
     int8_t isstaged = definition->isstaged;
+    assert(jl_is_tuple_type(type));
     size_t i, np = jl_nparams(type);
     for (i = 0; i < np; i++) {
         jl_value_t *elt = jl_tparam(type, i);
@@ -442,8 +443,8 @@ static void jl_cacheable_sig(
               this can be determined using a type intersection.
             */
             if (!*newparams) *newparams = jl_svec_copy(type->parameters);
-            if (i < jl_nparams(decl)) {
-                jl_value_t *declt = jl_tparam(decl, i);
+            if (decl_i) {
+                jl_value_t *declt = decl_i;
                 // for T..., intersect with T
                 if (jl_is_vararg_type(declt))
                     declt = jl_unwrap_vararg(declt);
@@ -1251,7 +1252,7 @@ jl_lambda_info_t *jl_compile_for_dispatch(jl_lambda_info_t *li)
     if (li->jlcall_api == 2)
         return li;
     if (jl_options.compile_enabled == JL_OPTIONS_COMPILE_OFF ||
-            jl_options.compile_enabled == JL_OPTIONS_COMPILE_MIN) {
+        jl_options.compile_enabled == JL_OPTIONS_COMPILE_MIN) {
         // copy fptr from the template method definition
         jl_method_t *def = li->def;
         if (def && !def->isstaged) {
@@ -2083,6 +2084,7 @@ JL_DLLEXPORT jl_svec_t *jl_match_method(jl_value_t *type, jl_value_t *sig,
 // arguments.
 static int tvar_exists_at_top_level(jl_value_t *tv, jl_tupletype_t *sig, int attop)
 {
+    sig = jl_unwrap_unionall(sig);
     int i, l=jl_nparams(sig);
     for(i=0; i < l; i++) {
         jl_value_t *a = jl_tparam(sig, i);
