@@ -2363,22 +2363,23 @@ function countunionsplit(atypes::Vector{Any})
     return nu
 end
 
-function invoke_NF(e::Expr, atypes::Vector{Any}, sv::InferenceState,
-                   atype_unlimited::ANY)
+function invoke_NF(argexprs, etype::ANY, atypes, sv, atype_unlimited::ANY)
     # converts a :call to :invoke
-    local nu = countunionsplit(atypes)
+    nu = countunionsplit(atypes)
     nu > MAX_UNION_SPLITTING && return NF
 
     if nu > 1
-        local spec_hit = nothing
-        local spec_miss = nothing
-        local error_label = nothing
-        local linfo_var = add_slot!(sv.src, MethodInstance, false)
-        local ex = copy(e)
-        local stmts = []
-        local arg_hoisted = false
+        spec_hit = nothing
+        spec_miss = nothing
+        error_label = nothing
+        linfo_var = add_slot!(sv.src, MethodInstance, false)
+        ex = Expr(:call)
+        ex.args = copy(argexprs)
+        ex.typ = etype
+        stmts = []
+        arg_hoisted = false
         for i = length(atypes):-1:1
-            local ti = atypes[i]
+            ti = atypes[i]
             if arg_hoisted || isa(ti, Union)
                 aei = ex.args[i]
                 if !effect_free(aei, sv.src, sv.mod, false)
@@ -2462,9 +2463,11 @@ function invoke_NF(e::Expr, atypes::Vector{Any}, sv::InferenceState,
     else
         local cache_linfo = ccall(:jl_get_spec_lambda, Any, (Any,), atype_unlimited)
         cache_linfo === nothing && return NF
-        e.head = :invoke
-        unshift!(e.args, cache_linfo)
-        return e
+        unshift!(argexprs, cache_linfo)
+        ex = Expr(:invoke)
+        ex.args = argexprs
+        ex.typ = etype
+        return ex
     end
     return NF
 end
@@ -2481,14 +2484,14 @@ function inlineable(f::ANY, ft::ANY, e::Expr, atypes::Vector{Any}, sv::Inference
         # typeassert(x::S, T) => x, when S<:T
         if isType(atypes[3]) && isleaftype(atypes[3]) &&
             atypes[2] ⊑ atypes[3].parameters[1]
-            return (e.args[2],())
+            return (argexprs[2],())
         end
     end
     if length(atypes)==3 && is(f,unbox)
         at3 = widenconst(atypes[3])
         if isa(at3,DataType) && !at3.mutable && at3.layout != C_NULL && datatype_pointerfree(at3)
             # remove redundant unbox
-            return (e.args[3],())
+            return (argexprs[3],())
         end
     end
     topmod = _topmod(sv)
@@ -2525,7 +2528,7 @@ function inlineable(f::ANY, ft::ANY, e::Expr, atypes::Vector{Any}, sv::Inference
 
     local atype_unlimited = argtypes_to_type(atypes)
     if !sv.inlining
-        return invoke_NF(e, atypes, sv, atype_unlimited)
+        return invoke_NF(argexprs, e.typ, atypes, sv, atype_unlimited)
     end
 
     if length(atype_unlimited.parameters) - 1 > MAX_TUPLETYPE_LEN
@@ -2535,7 +2538,7 @@ function inlineable(f::ANY, ft::ANY, e::Expr, atypes::Vector{Any}, sv::Inference
     end
     meth = _methods_by_ftype(atype, 1)
     if meth === false || length(meth) != 1
-        return invoke_NF(e, atypes, sv, atype_unlimited)
+        return invoke_NF(argexprs, e.typ, atypes, sv, atype_unlimited)
     end
     meth = meth[1]::SimpleVector
     metharg = meth[1]::Type
@@ -2556,9 +2559,10 @@ function inlineable(f::ANY, ft::ANY, e::Expr, atypes::Vector{Any}, sv::Inference
 
     methsig = method.sig
     if !(atype <: metharg)
-        return invoke_NF(e, atypes, sv, atype_unlimited)
+        return invoke_NF(argexprs, e.typ, atypes, sv, atype_unlimited)
     end
 
+    argexprs0 = argexprs
     na = method.nargs
     # check for vararg function
     isva = false
@@ -2585,13 +2589,13 @@ function inlineable(f::ANY, ft::ANY, e::Expr, atypes::Vector{Any}, sv::Inference
 
     (src, rettype, inferred) = typeinf(method, metharg, methsp, false)
     if src === nothing || !inferred
-        return invoke_NF(e, atypes, sv, atype_unlimited)
+        return invoke_NF(argexprs0, e.typ, atypes, sv, atype_unlimited)
     end
     if isa(src, Const)
         # in this case function can be inlined to a constant
         return inline_as_constant(src.val, argexprs, sv)
     elseif !isa(src, CodeInfo) || !src.inlineable
-        return invoke_NF(e, atypes, sv, atype_unlimited)
+        return invoke_NF(argexprs0, e.typ, atypes, sv, atype_unlimited)
     end
     ast = src.code
 
