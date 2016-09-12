@@ -189,7 +189,7 @@ void jl_mk_builtin_func(jl_datatype_t *dt, const char *name, jl_fptr_t fptr)
 jl_lambda_info_t *jl_type_infer(jl_lambda_info_t *li, int force)
 {
     JL_TIMING(INFERENCE);
-#ifdef ENABLE_INFERENCE
+#if 0 //def ENABLE_INFERENCE
     JL_LOCK(&codegen_lock); // use codegen lock to synchronize type-inference
     jl_module_t *mod = NULL;
     if (li->def != NULL)
