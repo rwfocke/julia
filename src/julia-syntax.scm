@@ -341,12 +341,13 @@
                            ,body ,isstaged)
                   `(method ,name
                            (block
-                            ,@(map make-assignment temps (symbols->typevars names bounds))
+                            ,@(map (lambda (l r) (make-assignment l (replace-vars r renames)))
+                                   temps (symbols->typevars names bounds))
                             (call (core svec) (curly Tuple
-                                                    ,@(dots->vararg
-                                                       (map (lambda (ty)
-                                                              (replace-vars ty renames))
-                                                            types)))
+                                                     ,@(dots->vararg
+                                                        (map (lambda (ty)
+                                                               (replace-vars ty renames))
+                                                             types)))
                                   (call (core svec) ,@temps)))
                            ,body ,isstaged))))
         (if (and iscall (not (null? argl)))
