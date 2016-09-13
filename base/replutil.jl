@@ -479,7 +479,7 @@ function show_method_candidates(io::IO, ex::MethodError, kwargs::Vector=Any[])
                 t_in === Union{} && special && i == 1 && break
                 if t_in === Union{}
                     if Base.have_color
-                        Base.with_output_color(:red, buf) do buf
+                        Base.with_output_color(:light_red, buf) do buf
                             print(buf, "::$sigstr")
                         end
                     else
@@ -520,7 +520,7 @@ function show_method_candidates(io::IO, ex::MethodError, kwargs::Vector=Any[])
                             print(buf, ", ")
                         end
                         if Base.have_color
-                            Base.with_output_color(:red, buf) do buf
+                            Base.with_output_color(:light_red, buf) do buf
                                 print(buf, "::$sigstr")
                             end
                         else
@@ -546,7 +546,7 @@ function show_method_candidates(io::IO, ex::MethodError, kwargs::Vector=Any[])
                         end
                     end
                     if !isempty(unexpected)
-                        Base.with_output_color(:red, buf) do buf
+                        Base.with_output_color(:light_red, buf) do buf
                             plur = length(unexpected) > 1 ? "s" : ""
                             print(buf, " got unsupported keyword argument$plur \"", join(unexpected, "\", \""), "\"")
                         end

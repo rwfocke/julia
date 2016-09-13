@@ -4,18 +4,25 @@
 ##             and REPL
 
 const text_colors = AnyDict(
-    :black     => "\033[1m\033[30m",
-    :red       => "\033[1m\033[31m",
-    :green     => "\033[1m\033[32m",
-    :yellow    => "\033[1m\033[33m",
-    :blue      => "\033[1m\033[34m",
-    :magenta   => "\033[1m\033[35m",
-    :cyan      => "\033[1m\033[36m",
-    :white     => "\033[1m\033[37m",
-    :normal    => "\033[0m",
-    :bold      => "\033[1m",
-    :italics   => "\033[3m",
-    :underline => "\033[4m",
+    :black         => "\033[30m",
+    :red           => "\033[31m",
+    :green         => "\033[32m",
+    :yellow        => "\033[33m",
+    :blue          => "\033[34m",
+    :magenta       => "\033[35m",
+    :cyan          => "\033[36m",
+    :white         => "\033[37m",
+    :dark_gray     => "\033[90m",
+    :light_red     => "\033[91m",
+    :light_green   => "\033[92m",
+    :light_yellow  => "\033[93m",
+    :light_blue    => "\033[94m",
+    :light_magenta => "\033[95m",
+    :light_cyan    => "\033[96m",
+    :normal        => "\033[0m",
+    :bold          => "\033[1m",
+    :italics       => "\033[3m",
+    :underline     => "\033[4m",
 )
 
 const disable_text_style = AnyDict(
@@ -43,7 +50,7 @@ Available colors are: $available_text_colors_docstring.
 text_colors
 
 have_color = false
-default_color_warn = :red
+default_color_warn = :light_red
 default_color_info = :cyan
 if is_windows()
     default_color_input = :normal
@@ -103,8 +110,10 @@ end
 
 display_error(er) = display_error(er, [])
 function display_error(er, bt)
-    with_output_color(:red, STDERR) do io
-        print(io, "ERROR: ")
+    with_output_color(:light_red, STDERR) do io
+        with_output_color(:bold, STDERR) do io_bold
+            print(io_bold, "ERROR: ")
+        end
         showerror(io, er, bt)
         println(io)
     end

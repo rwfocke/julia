@@ -14,6 +14,8 @@ New language features
 Language changes
 ----------------
 
+  * The function `print_with_color` does no longer print text in bold by default.
+
 Breaking changes
 ----------------
 
