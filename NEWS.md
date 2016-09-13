@@ -14,7 +14,7 @@ New language features
 Language changes
 ----------------
 
-  * The function `print_with_color` no longer prints text in bold by default.
+  * The function `print_with_color` no longer prints text in bold by default. As a side effect this means that if you are using `JULIA_INPUT_COLOR` to change the input color it will no longer be bold. 
 
 Breaking changes
 ----------------

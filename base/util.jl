@@ -304,7 +304,7 @@ function with_output_color(f::Function, color::Symbol, io::IO, args...)
     have_color && print(buf, get(text_colors, color, color_normal))
     try f(buf, args...)
     finally
-        have_color && print(buf, get(disable_text_style, color, "\033[0m"))
+        have_color && print(buf, get(disable_text_style, color, text_colors[:default]))
         print(io, takebuf_string(buf))
     end
 end
@@ -321,7 +321,11 @@ println_with_color(color::Symbol, msg::AbstractString...) =
 ## warnings and messages ##
 
 function bold_if_havecolor(str)
-    have_color ? "\e[1m" * str * "\e[22m" : str
+    io = IOBuffer()
+    with_output_color(:bold, io) do io
+        print(io, str)
+    end
+    return takebuf_string(io)
 end
 
 """

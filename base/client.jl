@@ -20,6 +20,7 @@ const text_colors = AnyDict(
     :light_magenta => "\033[95m",
     :light_cyan    => "\033[96m",
     :normal        => "\033[0m",
+    :default       => "\033[39m",
     :bold          => "\033[1m",
     :italics       => "\033[3m",
     :underline     => "\033[4m",
@@ -46,6 +47,9 @@ const available_text_colors_docstring =
 """Dictionary of color codes for the terminal.
 
 Available colors are: $available_text_colors_docstring.
+
+The color `:default` will print text in the default color while the color `:normal`
+will print text with all properties reset to normal (including boldness, italics etc).
 """
 text_colors
 
