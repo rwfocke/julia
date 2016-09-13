@@ -33,7 +33,7 @@ const disable_text_style = AnyDict(
 
 # Create a docstring with an automatically generated list
 # of colors.
-const possible_formatting_symbols = [:normal, :bold]
+const possible_formatting_symbols = [:normal, :bold, :italics, :underline]
 available_text_colors = collect(keys(text_colors))
 available_text_colors = cat(1,
     sort(intersect(available_text_colors, possible_formatting_symbols), rev=true),
