@@ -34,7 +34,7 @@ const disable_text_style = AnyDict(
 
 # Create a docstring with an automatically generated list
 # of colors.
-const possible_formatting_symbols = [:normal, :bold, :italics, :underline]
+const possible_formatting_symbols = [:normal, :bold, :italics, :underline, :default]
 available_text_colors = collect(keys(text_colors))
 available_text_colors = cat(1,
     sort(intersect(available_text_colors, possible_formatting_symbols), rev=true),
@@ -49,7 +49,7 @@ const available_text_colors_docstring =
 Available colors are: $available_text_colors_docstring.
 
 The color `:default` will print text in the default color while the color `:normal`
-will print text with all properties reset to normal (including boldness, italics etc).
+will print text with all properties reset to normal (including boldness, italics etc.).
 """
 text_colors
 
@@ -72,8 +72,10 @@ end
 
 warn_color()   = repl_color("JULIA_WARN_COLOR", default_color_warn)
 info_color()   = repl_color("JULIA_INFO_COLOR", default_color_info)
-input_color()  = text_colors[repl_color("JULIA_INPUT_COLOR", default_color_input)]
-answer_color() = text_colors[repl_color("JULIA_ANSWER_COLOR", default_color_answer)]
+
+# Print input and answer in bold unless the user specifies :default in the ENV var.
+input_color()  = text_colors[:bold] * text_colors[repl_color("JULIA_INPUT_COLOR", default_color_input)]
+answer_color() = text_colors[:bold] * text_colors[repl_color("JULIA_ANSWER_COLOR", default_color_answer)]
 
 function repl_cmd(cmd, out)
     shell = shell_split(get(ENV,"JULIA_SHELL",get(ENV,"SHELL","/bin/sh")))
