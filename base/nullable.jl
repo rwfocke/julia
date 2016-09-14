@@ -53,20 +53,20 @@ otherwise, returns `y` if provided, or throws a `NullException` if not.
 """
 @inline function get{S,T}(x::Nullable{S}, y::T)
     if isbits(S)
-        ifelse(x.isnull, y, x.value)
+        ifelse(isnull(x), y, x.value)
     else
-        x.isnull ? y : x.value
+        isnull(x) ? y : x.value
     end
 end
 
-get(x::Nullable) = x.isnull ? throw(NullException()) : x.value
+get(x::Nullable) = isnull(x) ? throw(NullException()) : x.value
 
-isnull(x::Nullable) = x.isnull
+isnull(x::Nullable) = !x.hasvalue
 
 function isequal(x::Nullable, y::Nullable)
-    if x.isnull && y.isnull
+    if isnull(x) && isnull(y)
         return true
-    elseif x.isnull || y.isnull
+    elseif isnull(x) || isnull(y)
         return false
     else
         return isequal(x.value, y.value)
@@ -78,7 +78,7 @@ end
 const nullablehash_seed = UInt === UInt64 ? 0x932e0143e51d0171 : 0xe51d0171
 
 function hash(x::Nullable, h::UInt)
-    if x.isnull
+    if isnull(x)
         return h + nullablehash_seed
     else
         return hash(x.value, h + nullablehash_seed)
