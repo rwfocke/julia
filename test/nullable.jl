@@ -40,15 +40,15 @@ for T in types
     @test eltype(x) === T
 end
 
-# Nullable{T}(value::T, isnull::Bool) = new(isnull, value)
+# Nullable{T}(value::T, hasvalue::Bool) = new(hasvalue, value)
 for T in types
-    x = Nullable{T}(zero(T),false)
+    x = Nullable{T}(zero(T), true)
     @test x.hasvalue === true
     @test isa(x.value, T)
     @test x.value === zero(T)
     @test eltype(x) === T
 
-    x = Nullable{T}(zero(T),true)
+    x = Nullable{T}(zero(T), false)
     @test x.hasvalue === false
     @test isa(x.value, T)
     @test eltype(Nullable{T}) === T
