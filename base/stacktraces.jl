@@ -183,31 +183,31 @@ function remove_frames!(stack::StackTrace, names::Vector{Symbol})
     return stack
 end
 
-function show_spec_linfo(io::IO, frame::StackFrame)
+function show_spec_linfo(io::IO, frame::StackFrame; withcolor::Bool = false)
     if isnull(frame.linfo)
         if frame.func === empty_sym
             @printf(io, "ip:%#x", frame.pointer)
         else
-            print_with_color(get(io, :REPLError, false) ? Base.bt_funcdef_color() : :nothing, io, string(frame.func))
+            print_with_color(withcolor ? Base.stackframe_function_color() : :nothing, io, string(frame.func))
         end
     else
         linfo = get(frame.linfo)
         if isdefined(linfo, :def)
-            Base.show_lambda_types(io, linfo)
+            Base.show_lambda_types(io, linfo; withcolor = withcolor)
         else
             Base.show(io, linfo)
         end
     end
 end
 
-function show(io::IO, frame::StackFrame; full_path::Bool=false)
-    isreplerror = get(io, :REPLError, false)
-    print(io, isreplerror ? " ─ " : " in ")
-    show_spec_linfo(io, frame)
+function show(io::IO, frame::StackFrame; full_path::Bool=false,
+              prefix = " in ", withcolor::Bool=false)
+    print(io, prefix)
+    show_spec_linfo(io, frame, withcolor = withcolor)
     if frame.file !== empty_sym
         file_info = full_path ? string(frame.file) : basename(string(frame.file))
         print(io, " at ")
-        Base.with_output_color(isreplerror ? Base.bt_linfo_color() : :nothing, io) do io
+        Base.with_output_color(withcolor ? Base.stackframe_linfo_color() : :nothing, io) do io
             print(io, file_info, ":")
             if frame.line >= 0
                 print(io, frame.line)

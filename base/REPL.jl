@@ -116,7 +116,7 @@ function display_error(io::IO, er, bt)
     if eval_ind != 0
         bt = bt[1:eval_ind-1]
     end
-    showerror(IOContext(io, :REPLError => true), er, bt)
+    showerror(IOContext(io, :hascolor => true), er, bt)
 end
 
 immutable REPLDisplay{R<:AbstractREPL} <: Display
