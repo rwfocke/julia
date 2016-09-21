@@ -29,8 +29,9 @@ some noteworthy differences that may trip up Julia users accustomed to MATLAB:
   ``i`` or ``j`` as in MATLAB.
 - In Julia, literal numbers without a decimal point (such as ``42``) create
   integers instead of floating point numbers. Arbitrarily large integer
-  literals are supported. As a result, some operations such as ``2^-1`` will
-  throw a domain error as the result is not an integer (see
+  literals are supported (currently 64-bit signed in Windows). 
+  As a result, some operations such as ``2^-1`` will throw a domain error 
+  as the result is not an integer (see 
   :ref:`the FAQ entry on domain errors <man-domain-error>` for details).
 - In Julia, multiple values are returned and assigned as tuples, e.g.
   ``(a, b) = (1, 2)`` or ``a, b = 1, 2``. MATLAB's ``nargout``, which is
